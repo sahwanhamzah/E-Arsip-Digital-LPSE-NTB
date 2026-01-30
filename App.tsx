@@ -57,10 +57,17 @@ const INITIAL_DATA: Surat[] = [
 ];
 
 const App: React.FC = () => {
-  // Persistence Logic
+  // Persistence Logic with Error Handling to prevent blank screen
   const [suratList, setSuratList] = useState<Surat[]>(() => {
-    const saved = localStorage.getItem('lpse_earsip_data');
-    return saved ? JSON.parse(saved) : INITIAL_DATA;
+    try {
+      const saved = localStorage.getItem('lpse_earsip_data');
+      if (!saved) return INITIAL_DATA;
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : INITIAL_DATA;
+    } catch (err) {
+      console.error("Error loading data from localStorage:", err);
+      return INITIAL_DATA;
+    }
   });
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -108,14 +115,14 @@ const App: React.FC = () => {
     if (activeTab === 'system') return [];
     return suratList.filter(s => {
       const categoryMatch = activeTab === 'dashboard' || activeTab === 'semua' || s.kategori.toLowerCase() === activeTab;
-      const searchMatch = s.perihal.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          s.noSurat.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          s.pihak.toLowerCase().includes(searchTerm.toLowerCase());
+      const searchMatch = s.perihal?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          s.noSurat?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          s.pihak?.toLowerCase().includes(searchTerm.toLowerCase());
       return categoryMatch && searchMatch;
     });
   }, [suratList, activeTab, searchTerm]);
 
-  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage) || 1;
   const paginatedList = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredList.slice(start, start + itemsPerPage);
@@ -308,7 +315,7 @@ const App: React.FC = () => {
               <input type="text" placeholder="Cari arsip..." className="pl-10 pr-4 py-2 bg-slate-100 rounded-xl text-sm w-64 outline-none focus:ring-2 focus:ring-blue-500 transition-all" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
 
-            {/* Tombol Laporan (Dikembalikan) */}
+            {/* Tombol Laporan */}
             <div className="relative">
                <button onClick={() => setShowReportDropdown(!showReportDropdown)} className="bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl flex items-center gap-2 hover:bg-slate-50 transition-all font-bold text-sm">
                  <Printer size={18} /><span>Laporan</span><ChevronDown size={14} />
@@ -383,7 +390,6 @@ const App: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Fitur Restore (Dikembalikan) */}
                 <div className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
                   <div className="bg-emerald-50 w-12 h-12 rounded-xl flex items-center justify-center text-emerald-600 mb-6"><CloudUpload size={24}/></div>
                   <h4 className="font-bold text-slate-900 mb-2">Pulihkan Data</h4>
@@ -448,7 +454,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Form Modal (Dikembalikan fitur Upload) */}
+        {/* Modal Form */}
         {showFormModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
             <div className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden">
@@ -494,7 +500,6 @@ const App: React.FC = () => {
                     <input type="date" className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.tanggalTerima} onChange={e => setFormData({...formData, tanggalTerima: e.target.value})} />
                   </div>
 
-                  {/* Upload Section (Dikembalikan) */}
                   <div className="col-span-2 space-y-1">
                     <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Lampiran Digital (Maks 10MB)</label>
                     {!formData.fileData ? (
@@ -523,7 +528,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Detail Modal */}
+        {/* Modal Detail */}
         {showDetailModal && selectedSurat && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
             <div className="bg-white rounded-[2.5rem] w-full max-w-xl shadow-2xl p-10 overflow-hidden">
@@ -563,7 +568,7 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {/* Print Preview (Dikembalikan) */}
+        {/* Modal Print Preview */}
         {showPrintPreview && (
            <div className="fixed inset-0 z-[200] bg-slate-900/95 flex items-center justify-center p-4 animate-in fade-in">
               <div className="bg-white w-full max-w-5xl h-[95vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
