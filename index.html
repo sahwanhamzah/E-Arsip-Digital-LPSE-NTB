@@ -10,6 +10,8 @@
   <style>
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 0;
     }
     @media print {
       .no-print { display: none !important; }
@@ -17,23 +19,38 @@
       body { background: white !important; }
     }
     .print-only { display: none; }
+    
+    /* Preloader style if needed */
+    #root:empty::after {
+      content: "Memuat Sistem...";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 12px;
+    }
   </style>
 <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "recharts": "https://esm.sh/recharts@2.15.0?external=react",
+    "@google/genai": "https://esm.sh/@google/genai@0.21.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.463.0?external=react",
     "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4",
-    "recharts": "https://esm.sh/recharts@^3.7.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
 </script>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body class="bg-slate-50 text-slate-900">
   <div id="root"></div>
-<script type="module" src="/index.tsx"></script>
+  <script type="module" src="./index.tsx"></script>
 </body>
 </html>
