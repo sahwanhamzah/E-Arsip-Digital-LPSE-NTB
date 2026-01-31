@@ -624,227 +624,143 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Modal Form */}
-        {showFormModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden">
-              <div className="p-6 bg-slate-900 text-white flex justify-between items-center">
-                <div className="flex items-center gap-3"><Plus size={20}/><h3 className="text-xl font-bold">{selectedSurat ? 'Edit Arsip' : 'Tambah Arsip Baru'}</h3></div>
-                <button onClick={() => setShowFormModal(false)} className="p-2 hover:bg-white/10 rounded-xl"><X/></button>
+        {/* Modal Components (Form, Print, Detail) */}
+        {showFormModal && currentUser.role === 'Administrator' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <div className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95">
+              <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-[#0F172A] text-white">
+                <div><h3 className="text-2xl font-bold">{selectedSurat ? 'Edit Arsip' : 'Tambah Arsip Baru'}</h3><p className="text-blue-300 text-[10px] font-black uppercase mt-1 tracking-widest">Integritas Data LPSE NTB</p></div>
+                <button onClick={() => setShowFormModal(false)} className="hover:bg-white/10 p-2 rounded-xl transition-all"><X size={24} /></button>
               </div>
-              <form onSubmit={handleFormSubmit} className="p-8 space-y-6 max-h-[80vh] overflow-y-auto">
+              <form onSubmit={handleFormSubmit} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-2 space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Perihal / Judul Surat</label>
-                    <input required className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.perihal} onChange={e => setFormData({...formData, perihal: e.target.value})} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Nomor Surat</label>
-                    <input required className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.noSurat} onChange={e => setFormData({...formData, noSurat: e.target.value})} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Instansi Terkait</label>
-                    <input required className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.pihak} onChange={e => setFormData({...formData, pihak: e.target.value})} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Kategori</label>
-                    <select className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.kategori} onChange={e => setFormData({...formData, kategori: e.target.value as KategoriSurat})}>
+                  <div className="col-span-2"><label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Judul / Perihal</label><input required className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.perihal} onChange={(e) => setFormData({...formData, perihal: e.target.value})} /></div>
+                  <div className="col-span-1"><label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">No Surat</label><input required className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.noSurat} onChange={(e) => setFormData({...formData, noSurat: e.target.value})} /></div>
+                  <div className="col-span-1"><label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Asal/Tujuan (Instansi)</label><input required className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.pihak} onChange={(e) => setFormData({...formData, pihak: e.target.value})} /></div>
+                  
+                  {/* CATEGORY & STATUS SELECTORS */}
+                  <div className="col-span-1">
+                    <label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Kategori Arsip</label>
+                    <select required className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.kategori} onChange={(e) => setFormData({...formData, kategori: e.target.value as KategoriSurat})}>
                       <option value="Masuk">Surat Masuk</option>
                       <option value="Keluar">Surat Keluar</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Status Dokumen</label>
-                    <select className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as StatusSurat})}>
+                  <div className="col-span-1">
+                    <label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Status Dokumen</label>
+                    <select required className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value as StatusSurat})}>
                       <option value="Proses">Dalam Proses</option>
                       <option value="Selesai">Selesai / Diarsipkan</option>
-                      <option value="Penting">Segera / Penting</option>
+                      <option value="Penting">Penting / Segera</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tanggal Surat</label>
-                    <input type="date" className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.tanggalSurat} onChange={e => setFormData({...formData, tanggalSurat: e.target.value})} />
+
+                  {/* DATE FIELDS */}
+                  <div className="col-span-1">
+                    <label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Tanggal Surat</label>
+                    <input required type="date" className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.tanggalSurat} onChange={(e) => setFormData({...formData, tanggalSurat: e.target.value})} />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Tanggal Terima</label>
-                    <input type="date" className="w-full px-5 py-3.5 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.tanggalTerima} onChange={e => setFormData({...formData, tanggalTerima: e.target.value})} />
+                  <div className="col-span-1">
+                    <label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Tanggal Terima</label>
+                    <input required type="date" className="w-full px-5 py-3 bg-slate-50 border-2 border-transparent focus:border-blue-500 rounded-2xl outline-none font-bold text-sm" value={formData.tanggalTerima} onChange={(e) => setFormData({...formData, tanggalTerima: e.target.value})} />
                   </div>
 
-                  <div className="col-span-2 space-y-1">
-                    <label className="text-[10px] font-black uppercase text-slate-400 ml-1">Lampiran Digital (Maks 10MB)</label>
+                  <div className="col-span-2">
+                    <label className="text-xs font-black uppercase text-slate-400 mb-2 block tracking-widest">Lampiran (PDF, DOCX, JPG - Maks 10MB)</label>
                     {!formData.fileData ? (
-                       <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-all group">
-                         <Upload className="text-slate-300 mb-2 group-hover:text-blue-500 transition-colors" />
-                         <p className="text-sm font-bold text-slate-400">Klik untuk pilih file (PDF/JPG/PNG)</p>
+                       <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-200 rounded-2xl p-6 flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-all">
+                         <Upload className="text-slate-300 mb-2" />
+                         <p className="text-sm font-bold text-slate-400">Pilih berkas digital</p>
                          <input type="file" ref={fileInputRef} className="hidden" accept=".pdf,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} />
                        </div>
                     ) : (
-                       <div className="p-4 bg-blue-50 rounded-2xl flex items-center justify-between border border-blue-100">
+                       <div className="p-4 bg-blue-50 rounded-2xl flex items-center justify-between border border-blue-100 animate-in fade-in">
                          <div className="flex items-center gap-3">
                            <FileIcon size={20} className="text-blue-500" />
-                           <span className="text-sm font-bold text-blue-900 truncate max-w-[400px]">{formData.fileName}</span>
+                           <span className="text-sm font-bold text-blue-900 truncate max-w-[300px]">{formData.fileName}</span>
                          </div>
-                         <button type="button" onClick={() => setFormData({...formData, fileData: '', fileName: ''})} className="text-rose-500 hover:bg-white p-1.5 rounded-lg transition-all"><X size={18}/></button>
+                         <button type="button" onClick={() => setFormData({...formData, fileData: '', fileName: ''})} className="text-blue-400 hover:text-rose-500 transition-colors"><X size={18}/></button>
                        </div>
                     )}
                   </div>
                 </div>
-                <div className="pt-4 flex gap-4">
-                  <button type="submit" className="flex-1 bg-slate-900 text-white py-4 rounded-[1.5rem] font-bold shadow-xl hover:bg-blue-900 transition-all">Simpan Arsip</button>
-                  <button type="button" onClick={() => setShowFormModal(false)} className="px-8 bg-slate-100 text-slate-600 rounded-[1.5rem] font-bold hover:bg-slate-200 transition-all">Batal</button>
-                </div>
+                <div className="flex gap-4 pt-6"><button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 transition-all hover:bg-blue-700">Simpan Arsip</button><button type="button" onClick={() => setShowFormModal(false)} className="px-8 bg-slate-100 text-slate-600 rounded-2xl font-bold transition-all hover:bg-slate-200">Batal</button></div>
               </form>
             </div>
           </div>
         )}
 
-        {/* Modal Detail */}
         {showDetailModal && selectedSurat && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-            <div className="bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl p-10 overflow-hidden flex flex-col max-h-[95vh]">
-              <div className="flex justify-between items-center mb-6 shrink-0">
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Detail Arsip Digital</h3>
-                <button onClick={() => setShowDetailModal(false)} className="text-slate-400 hover:bg-slate-50 p-2 rounded-xl transition-all"><X/></button>
+            <div className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden">
+              <div className="p-8 border-b border-slate-100 flex justify-between items-center bg-[#0F172A] text-white">
+                <div><h3 className="text-2xl font-bold">Detail Arsip</h3><p className="text-blue-300 text-[10px] font-black uppercase mt-1 tracking-widest">Informasi Dokumen</p></div>
+                <button onClick={() => setShowDetailModal(false)} className="p-2 rounded-xl transition-all hover:bg-white/10"><X size={24} /></button>
               </div>
-              
-              <div className="flex flex-col lg:flex-row gap-8 overflow-y-auto">
-                {/* Information Column */}
-                <div className="w-full lg:w-1/3 space-y-6">
-                  <DetailItem label="Perihal" value={selectedSurat.perihal} full/>
-                  <div className="grid grid-cols-1 gap-4">
-                    <DetailItem label="Nomor Surat" value={selectedSurat.noSurat}/>
-                    <DetailItem label="Instansi / Pihak" value={selectedSurat.pihak}/>
-                    <DetailItem label="Tanggal Surat" value={selectedSurat.tanggalSurat}/>
-                    <DetailItem label="Tanggal Terima" value={selectedSurat.tanggalTerima}/>
-                    <DetailItem label="Status Dokumen" value={selectedSurat.status} isStatus/>
-                    <DetailItem label="Kategori" value={selectedSurat.kategori}/>
-                  </div>
+              <div className="p-8 space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="col-span-2 p-4 bg-slate-50 rounded-2xl border border-slate-100"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Perihal</p><p className="text-lg font-bold text-slate-800">{selectedSurat.perihal}</p></div>
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">No Surat</p><p className="font-bold text-slate-700">{selectedSurat.noSurat}</p></div>
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Instansi</p><p className="font-bold text-slate-700">{selectedSurat.pihak}</p></div>
                   
-                  <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                    <p className="text-[10px] font-black uppercase text-blue-400 mb-1 flex items-center gap-2"><Bot size={12}/> Ringkasan AI</p>
-                    <p className="text-sm font-medium text-blue-900 leading-relaxed italic">"{selectedSurat.isiRingkas || 'Sedang memproses ringkasan...'}"</p>
-                  </div>
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Tanggal Surat</p><p className="font-bold text-slate-700">{selectedSurat.tanggalSurat}</p></div>
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Tanggal Terima</p><p className="font-bold text-slate-700">{selectedSurat.tanggalTerima}</p></div>
+                  
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Status</p><StatusBadge status={selectedSurat.status} /></div>
+                  <div className="col-span-1"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Kategori</p><p className="font-bold text-slate-700">{selectedSurat.kategori}</p></div>
 
-                  {selectedSurat.fileData && (
-                    <button 
-                      onClick={() => {
-                        const link = document.createElement('a');
-                        link.href = selectedSurat.fileData!;
-                        link.download = selectedSurat.fileName || 'dokumen_arsip';
-                        link.click();
-                      }} 
-                      className="w-full flex items-center justify-center gap-3 bg-emerald-600 text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-700 hover:-translate-y-1 transition-all"
-                    >
-                      <Download size={20}/> Download Dokumen
-                    </button>
-                  )}
+                  <div className="col-span-2"><p className="text-[10px] text-slate-400 font-black uppercase mb-1">Ringkasan AI</p><div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 italic text-slate-700 text-sm">{selectedSurat.isiRingkas || 'Gagal menghasilkan ringkasan.'}</div></div>
                 </div>
-
-                {/* Preview Column */}
-                <div className="w-full lg:w-2/3 flex flex-col">
-                  <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2 px-1">Pratinjau Dokumen</p>
-                  <div className="bg-slate-50 border-2 border-slate-100 rounded-[2rem] overflow-hidden flex-1 min-h-[400px] flex items-center justify-center relative">
-                    {selectedSurat.fileData ? (
-                      selectedSurat.fileType?.startsWith('image/') ? (
-                        <img 
-                          src={selectedSurat.fileData} 
-                          alt="Document Preview" 
-                          className="w-full h-full object-contain animate-in fade-in duration-500" 
-                        />
-                      ) : selectedSurat.fileType === 'application/pdf' ? (
-                        <iframe 
-                          src={`${selectedSurat.fileData}#toolbar=0`} 
-                          className="w-full h-full border-none"
-                          title="PDF Viewer"
-                        />
-                      ) : (
-                        <div className="text-center p-10">
-                          <FileIcon size={48} className="text-slate-300 mx-auto mb-4" />
-                          <p className="text-slate-500 font-bold text-sm">Pratinjau tidak tersedia untuk format ini</p>
-                          <p className="text-slate-400 text-xs mt-1">Silakan unduh dokumen untuk melihat isi</p>
-                        </div>
-                      )
-                    ) : (
-                      <div className="text-center p-10">
-                        <Activity size={48} className="text-slate-200 mx-auto mb-4" />
-                        <p className="text-slate-400 font-bold text-sm italic">Belum ada file dokumen yang diunggah</p>
-                      </div>
-                    )}
-                    
-                    {selectedSurat.fileData && (
-                       <button 
-                        onClick={() => {
-                          const win = window.open();
-                          win?.document.write(`<iframe src="${selectedSurat.fileData}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
-                        }}
-                        className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl shadow-lg text-blue-600 hover:bg-blue-600 hover:text-white transition-all group"
-                        title="Buka di Tab Baru"
-                       >
-                         <ExternalLink size={18} />
-                       </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-8 pt-6 border-t border-slate-50 shrink-0">
-                <button onClick={() => setShowDetailModal(false)} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl hover:bg-slate-800 transition-all">Tutup Pratinjau</button>
+                <button onClick={() => setShowDetailModal(false)} className="w-full bg-[#0F172A] text-white py-4 rounded-2xl font-bold transition-all hover:bg-blue-900">Tutup</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Modal Print Preview */}
         {showPrintPreview && (
-           <div className="fixed inset-0 z-[200] bg-slate-900/95 flex items-center justify-center p-4 animate-in fade-in">
+           <div className="fixed inset-0 z-[200] bg-slate-900/90 flex items-center justify-center p-4 animate-in fade-in">
               <div className="bg-white w-full max-w-5xl h-[95vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
                  <div className="p-6 bg-[#0F172A] text-white flex justify-between items-center no-print">
-                    <div className="flex items-center gap-4"><Printer className="text-yellow-500" size={24}/><h3 className="text-xl font-bold">Cetak Laporan: {reportType}</h3></div>
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => window.print()} className="bg-yellow-500 text-slate-900 px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg hover:bg-yellow-400">
-                        <Printer size={18} /><span>Cetak Sekarang</span>
-                      </button>
-                      <button onClick={() => setShowPrintPreview(false)} className="bg-white/10 p-2.5 rounded-xl hover:bg-white/20 transition-all"><X size={20}/></button>
-                    </div>
+                    <div className="flex items-center gap-4"><Printer className="text-[#EAB308]" size={24}/><h3 className="text-xl font-bold">Cetak Laporan</h3></div>
+                    <div className="flex items-center gap-3"><button onClick={() => window.print()} className="bg-[#EAB308] text-[#0F172A] px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-yellow-500/20"><Printer size={18} /><span>Cetak</span></button><button onClick={() => setShowPrintPreview(false)} className="bg-white/10 p-2.5 rounded-xl"><X size={20}/></button></div>
                  </div>
-                 <div className="flex-1 overflow-y-auto p-12 bg-slate-100 flex justify-center">
-                    <div className="bg-white w-[210mm] min-h-[297mm] p-16 flex flex-col text-black shadow-lg">
-                       <div className="flex items-center gap-6 border-b-[3px] border-black pb-4 mb-8">
-                          <div className="w-20 h-20 bg-slate-200 border-2 border-black flex items-center justify-center text-[8px] font-bold text-center p-2">LOGO PROV NTB</div>
+                 <div className="flex-1 overflow-y-auto p-12 bg-slate-50 flex justify-center">
+                    <div className="bg-white w-[210mm] p-16 flex flex-col text-[#000]">
+                       <div className="flex items-center gap-6 border-b-[3px] border-slate-900 pb-4 mb-8">
+                          <div className="w-24 h-24 bg-slate-100 border flex items-center justify-center text-[10px] font-bold">LOGO</div>
                           <div className="text-center flex-1">
                              <h4 className="text-lg font-bold uppercase leading-tight">Pemerintah Provinsi Nusa Tenggara Barat</h4>
                              <h4 className="text-xl font-black uppercase">Biro Pengadaan Barang dan Jasa</h4>
                              <p className="text-sm font-bold">Layanan Pengadaan Secara Elektronik (LPSE)</p>
                           </div>
-                          <div className="w-20 h-20 border-2 border-black flex items-center justify-center"><QrCode size={50}/></div>
+                          <div className="w-20 h-20 flex items-center justify-center border border-slate-100"><QrCode size={60}/></div>
                        </div>
-                       <h5 className="text-center font-black text-lg underline mb-8 uppercase">LAPORAN ARSIP DIGITAL {reportType !== 'Semua' ? `SURAT ${reportType.toUpperCase()}` : 'SEMUA SURAT'}</h5>
-                       <table className="w-full border-collapse border-2 border-black text-[10px]">
-                          <thead className="bg-slate-100 font-black uppercase">
+                       <table className="w-full border-collapse border border-slate-900 text-[11px]">
+                          <thead className="bg-slate-100">
                              <tr>
-                                <th className="border-2 border-black p-2 text-center w-8">No</th>
-                                <th className="border-2 border-black p-2 text-center">Nomor Surat</th>
-                                <th className="border-2 border-black p-2 text-center">Tanggal</th>
-                                <th className="border-2 border-black p-2 text-left">Perihal</th>
-                                <th className="border-2 border-black p-2 text-left">Instansi</th>
+                                <th className="border border-slate-900 p-2 text-center w-8">No</th>
+                                <th className="border border-slate-900 p-2 text-center">Nomor Surat</th>
+                                <th className="border border-slate-900 p-2 text-center">Tanggal Dok.</th>
+                                <th className="border border-slate-900 p-2 text-left">Perihal</th>
+                                <th className="border border-slate-900 p-2 text-left">Pihak</th>
                              </tr>
                           </thead>
                           <tbody>
-                             {(reportType === 'Semua' ? suratList : suratList.filter(s => s.kategori === reportType)).map((s, idx) => (
+                             {suratList.map((s, idx) => (
                                 <tr key={s.id}>
-                                   <td className="border-2 border-black p-2 text-center">{idx + 1}</td>
-                                   <td className="border-2 border-black p-2 text-center font-bold">{s.noSurat}</td>
-                                   <td className="border-2 border-black p-2 text-center">{s.tanggalSurat}</td>
-                                   <td className="border-2 border-black p-2 font-semibold">{s.perihal}</td>
-                                   <td className="border-2 border-black p-2">{s.pihak}</td>
+                                   <td className="border border-slate-900 p-2 text-center">{idx + 1}</td>
+                                   <td className="border border-slate-900 p-2 text-center font-bold">{s.noSurat}</td>
+                                   <td className="border border-slate-900 p-2 text-center">{s.tanggalSurat}</td>
+                                   <td className="border border-slate-900 p-2 font-semibold">{s.perihal}</td>
+                                   <td className="border border-slate-900 p-2">{s.pihak}</td>
                                 </tr>
                              ))}
                           </tbody>
                        </table>
-                       <div className="mt-12 flex justify-end text-center">
+                       <div className="mt-auto pt-16 flex justify-end text-center w-full">
                           <div className="w-64">
                              <p className="text-xs font-bold mb-1">Mataram, {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-                             <p className="text-xs font-bold uppercase mb-16">Kepala LPSE Prov. NTB</p>
+                             <p className="text-xs font-bold uppercase mb-20">Kepala LPSE Prov. NTB</p>
                              <p className="text-xs font-black uppercase underline">LALU MAJEMUK, S.Sos.</p>
                              <p className="text-[10px] font-bold">NIP. 19800101 200501 1 001</p>
                           </div>
@@ -859,35 +775,23 @@ const App: React.FC = () => {
   );
 };
 
-// --- Sub-Components ---
 const SidebarLink: React.FC<{ icon: React.ReactNode, label: string, active: boolean, collapsed: boolean, onClick: () => void }> = ({ icon, label, active, collapsed, onClick }) => (
-  <button onClick={onClick} className={`w-full flex items-center gap-4 p-3.5 rounded-2xl transition-all duration-300 ${active ? 'bg-yellow-500 text-slate-900 shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-    <div className="shrink-0">{React.cloneElement(icon as React.ReactElement<any>, { size: 20 })}</div>
+  <button onClick={onClick} className={`w-full flex items-center gap-4 p-3.5 rounded-2xl transition-all duration-300 ${active ? 'bg-[#EAB308] text-[#0F172A] shadow-lg' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+    <div>{React.cloneElement(icon as React.ReactElement<any>, { size: 20 })}</div>
     {!collapsed && <span className="text-sm font-bold tracking-tight">{label}</span>}
   </button>
 );
 
 const StatCard: React.FC<{ label: string, value: number, icon: React.ReactNode, color: string, bg: string }> = ({ label, value, icon, color, bg }) => (
-  <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-md transition-shadow">
-    <div className={`${bg} ${color} p-4 rounded-2xl`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}</div>
+  <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-5 hover:shadow-xl transition-all group">
+    <div className={`${bg} ${color} p-4 rounded-2xl group-hover:scale-110 transition-transform`}>{React.cloneElement(icon as React.ReactElement<any>, { size: 24 })}</div>
     <div><p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{label}</p><h4 className="text-3xl font-black text-slate-900 tracking-tighter">{value}</h4></div>
   </div>
 );
 
 const StatusBadge: React.FC<{ status: StatusSurat }> = ({ status }) => {
-  const styles = { 
-    'Selesai': 'bg-emerald-50 text-emerald-700 border-emerald-100', 
-    'Penting': 'bg-rose-50 text-rose-700 border-rose-100', 
-    'Proses': 'bg-amber-50 text-amber-700 border-amber-100' 
-  };
+  const styles = { 'Selesai': 'bg-emerald-50 text-emerald-700 border-emerald-100', 'Penting': 'bg-rose-50 text-rose-700 border-rose-100', 'Proses': 'bg-amber-50 text-amber-700 border-amber-100' };
   return <span className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border ${styles[status]}`}>{status}</span>;
 };
-
-const DetailItem: React.FC<{ label: string, value: string, full?: boolean, isStatus?: boolean }> = ({ label, value, full, isStatus }) => (
-  <div className={full ? 'col-span-2' : ''}>
-    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">{label}</p>
-    {isStatus ? <StatusBadge status={value as StatusSurat}/> : <p className="font-bold text-slate-800 leading-tight">{value}</p>}
-  </div>
-);
 
 export default App;
