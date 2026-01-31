@@ -199,7 +199,7 @@ const App: React.FC = () => {
   };
 
   const handleOpenAdd = () => {
-    if (currentUser?.role !== 'Administrator') return;
+    // Both Admin and Staff can add now
     const defaultKategori: KategoriSurat = activeTab === 'keluar' ? 'Keluar' : 'Masuk';
     setFormData({ 
       noSurat: '', kodeHal: '', perihal: '', pihak: '', 
@@ -212,14 +212,17 @@ const App: React.FC = () => {
   };
 
   const handleEdit = (item: Surat) => {
-    if (currentUser?.role !== 'Administrator') return;
+    // Keep edit to Admin or we can allow Staff to edit as well
     setFormData(item);
     setSelectedSurat(item);
     setShowFormModal(true);
   };
 
   const handleDelete = (id: string) => {
-    if (currentUser?.role !== 'Administrator') return;
+    if (currentUser?.role !== 'Administrator') {
+      alert('Hanya Administrator yang dapat menghapus arsip.');
+      return;
+    }
     if (window.confirm('Hapus arsip ini?')) {
       setSuratList(prev => prev.filter(s => s.id !== id));
     }
@@ -249,30 +252,34 @@ const App: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-slate-900 relative">
-        <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: "url('https://storage.ntbprov.go.id/biropbj/media/kantor-gubernur-ntb.jpg')" }}></div>
-        <div className="w-full max-w-md bg-white/95 rounded-[3rem] p-12 relative z-10 shadow-2xl">
+      <div className="min-h-screen flex items-center justify-center p-6 relative bg-slate-900 overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center opacity-25 scale-105" style={{ backgroundImage: "url('https://storage.ntbprov.go.id/biropbj/media/kantor-gubernur-ntb.jpg')" }}></div>
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[3rem] p-12 relative z-10 shadow-2xl border border-white/20">
           <div className="text-center mb-10">
-            <div className="bg-yellow-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-yellow-500/20"><ShieldCheck size={40} /></div>
+            <div className="bg-yellow-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-yellow-500/20"><ShieldCheck className="text-slate-900" size={40} /></div>
             <h1 className="text-3xl font-black text-slate-900">E-Arsip Digital</h1>
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-2">LPSE PROV NTB</p>
+            <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">LPSE PROV NTB</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-6">
-            {loginError && <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase text-center">{loginError}</div>}
+            {loginError && <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase text-center border border-rose-100">{loginError}</div>}
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Username</label>
-              <input required type="text" className="w-full px-6 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} />
+              <div className="relative group">
+                <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500" size={20} />
+                <input required type="text" className="w-full pl-14 pr-6 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} />
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Password</label>
-              <div className="relative">
-                <input required type={showPassword ? 'text' : 'password'} className="w-full px-6 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} />
+              <div className="relative group">
+                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500" size={20} />
+                <input required type={showPassword ? 'text' : 'password'} className="w-full pl-14 pr-14 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300">
                   {showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}
                 </button>
               </div>
             </div>
-            <button disabled={isLoginLoading} type="submit" className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] shadow-xl flex items-center justify-center gap-3 tracking-widest">
+            <button disabled={isLoginLoading} type="submit" className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-[10px] shadow-xl hover:bg-blue-900 transition-all flex items-center justify-center gap-3">
               {isLoginLoading ? <Loader2 className="animate-spin" size={20}/> : 'Masuk Sistem'}
             </button>
           </form>
@@ -323,8 +330,9 @@ const App: React.FC = () => {
                 <button onClick={() => handleGenerateReport('Keluar')} className="w-full text-left px-6 py-4 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-4">Surat Keluar</button>
               </div>
             )}
-            {currentUser.role === 'Administrator' && (
-              <button onClick={handleOpenAdd} className="bg-slate-900 text-white px-8 py-3.5 rounded-[1.25rem] flex items-center gap-3 font-black text-[10px] uppercase tracking-widest">
+            {/* Staff / User should also see this button for Masuk/Keluar tabs */}
+            {(currentUser.role === 'Administrator' || activeTab === 'masuk' || activeTab === 'keluar') && (
+              <button onClick={handleOpenAdd} className="bg-slate-900 text-white px-8 py-3.5 rounded-[1.25rem] flex items-center gap-3 font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-600 transition-all">
                 <Plus size={20} /><span>Arsip Baru</span>
               </button>
             )}
@@ -405,11 +413,10 @@ const App: React.FC = () => {
                         <td className="px-8 py-6 last:rounded-r-[2rem] border-y border-r border-transparent group-hover:border-slate-100 text-right">
                           <div className="flex justify-end gap-3 opacity-60 group-hover:opacity-100">
                             <button onClick={() => { setSelectedSurat(item); setShowDetailModal(true); }} className="p-3 text-slate-400 hover:text-blue-600 hover:bg-white rounded-2xl shadow-sm"><Eye size={20}/></button>
+                            {/* Both roles can edit entries, but delete is for Admin */}
+                            <button onClick={() => handleEdit(item)} className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm"><Edit3 size={20}/></button>
                             {currentUser.role === 'Administrator' && (
-                              <>
-                                <button onClick={() => handleEdit(item)} className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm"><Edit3 size={20}/></button>
-                                <button onClick={() => handleDelete(item.id)} className="p-3 text-slate-400 hover:text-rose-600 hover:bg-white rounded-2xl shadow-sm"><Trash2 size={20}/></button>
-                              </>
+                              <button onClick={() => handleDelete(item.id)} className="p-3 text-slate-400 hover:text-rose-600 hover:bg-white rounded-2xl shadow-sm"><Trash2 size={20}/></button>
                             )}
                           </div>
                         </td>
@@ -458,9 +465,9 @@ const App: React.FC = () => {
                 <div className="flex-1 bg-slate-100 p-6 flex items-center justify-center overflow-hidden">
                   {selectedSurat.fileData ? (
                     selectedSurat.fileType?.startsWith('image/') ? (
-                      <img src={selectedSurat.fileData} className="max-w-full max-h-full object-contain" />
+                      <img src={selectedSurat.fileData} className="max-w-full max-h-full object-contain" alt="Preview" />
                     ) : (
-                      <iframe src={selectedSurat.fileData} className="w-full h-full border-none" />
+                      <iframe src={selectedSurat.fileData} className="w-full h-full border-none" title="Document Viewer" />
                     )
                   ) : <Activity className="text-slate-200" size={48} />}
                 </div>
@@ -490,7 +497,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* NEW DATE FIELDS */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Tanggal Surat</label>
@@ -543,32 +549,33 @@ const App: React.FC = () => {
         {showPrintPreview && (
           <div className="fixed inset-0 z-[200] bg-white flex flex-col p-10 overflow-y-auto">
              <div className="flex justify-between items-center mb-10 no-print">
-                <button onClick={() => window.print()} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Cetak Laporan</button>
-                <button onClick={() => setShowPrintPreview(false)} className="text-slate-400"><X size={24}/></button>
+                <button onClick={() => window.print()} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold shadow-lg">Cetak Laporan</button>
+                <button onClick={() => setShowPrintPreview(false)} className="text-slate-400 p-2 hover:bg-slate-100 rounded-full transition-all"><X size={24}/></button>
              </div>
-             <div className="max-w-[800px] mx-auto w-full border-2 border-slate-100 p-10 bg-white">
-                <div className="text-center mb-10 border-b-4 border-black pb-4">
-                   <h2 className="text-xl font-bold uppercase">Laporan Arsip Surat Digital</h2>
-                   <p className="text-sm">LPSE PROV NTB - {reportType}</p>
+             <div className="max-w-[800px] mx-auto w-full border-2 border-slate-100 p-10 bg-white shadow-xl">
+                <div className="text-center mb-10 border-b-4 border-black pb-6">
+                   <h4 className="text-xl font-bold uppercase leading-tight">Pemerintah Provinsi Nusa Tenggara Barat</h4>
+                   <h2 className="text-2xl font-black uppercase mb-1">Laporan Arsip Surat Digital</h2>
+                   <p className="text-sm font-medium tracking-widest">LPSE PROV NTB - {reportType}</p>
                 </div>
-                <table className="w-full border-collapse border border-slate-300">
-                   <thead>
-                      <tr className="bg-slate-50">
-                         <th className="border border-slate-300 p-2">No</th>
-                         <th className="border border-slate-300 p-2">No Surat</th>
-                         <th className="border border-slate-300 p-2 text-left">Perihal</th>
-                         <th className="border border-slate-300 p-2">Tgl Surat</th>
-                         <th className="border border-slate-300 p-2">Tgl Terima</th>
+                <table className="w-full border-collapse border-2 border-black">
+                   <thead className="bg-slate-50 font-black uppercase text-[11px] tracking-wider">
+                      <tr>
+                         <th className="border-2 border-black p-3 w-10">No</th>
+                         <th className="border-2 border-black p-3">No Surat</th>
+                         <th className="border-2 border-black p-3 text-left">Perihal</th>
+                         <th className="border-2 border-black p-3">Tgl Surat</th>
+                         <th className="border-2 border-black p-3">Tgl Terima</th>
                       </tr>
                    </thead>
-                   <tbody>
+                   <tbody className="text-[12px]">
                       {(reportType === 'Semua' ? suratList : suratList.filter(s => s.kategori === reportType)).map((s, i) => (
                          <tr key={s.id}>
-                            <td className="border border-slate-300 p-2 text-center">{i+1}</td>
-                            <td className="border border-slate-300 p-2 text-center font-bold">{s.noSurat}</td>
-                            <td className="border border-slate-300 p-2">{s.perihal}</td>
-                            <td className="border border-slate-300 p-2 text-center">{s.tanggalSurat}</td>
-                            <td className="border border-slate-300 p-2 text-center">{s.tanggalTerima}</td>
+                            <td className="border-2 border-black p-3 text-center font-bold">{i+1}</td>
+                            <td className="border-2 border-black p-3 text-center font-bold">{s.noSurat}</td>
+                            <td className="border-2 border-black p-3">{s.perihal}</td>
+                            <td className="border-2 border-black p-3 text-center">{s.tanggalSurat}</td>
+                            <td className="border-2 border-black p-3 text-center">{s.tanggalTerima}</td>
                          </tr>
                       ))}
                    </tbody>
@@ -583,28 +590,32 @@ const App: React.FC = () => {
 
 // Sub-components
 const SidebarLink: React.FC<{ icon: React.ReactNode, label: string, active: boolean, collapsed: boolean, onClick: () => void }> = ({ icon, label, active, collapsed, onClick }) => (
-  <button onClick={onClick} className={`w-full flex items-center gap-5 p-4 rounded-2xl transition-all ${active ? 'bg-yellow-500 text-slate-900 shadow-xl' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
-    {icon}
+  <button onClick={onClick} className={`w-full flex items-center gap-5 p-4 rounded-2xl transition-all ${active ? 'bg-yellow-500 text-slate-900 shadow-xl scale-105' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}>
+    <div className={`${active ? 'scale-110' : ''}`}>{icon}</div>
     {!collapsed && <span className="text-sm font-black tracking-tight">{label}</span>}
   </button>
 );
 
 const StatCard: React.FC<{ label: string, value: number, icon: React.ReactNode, color: string, bg: string }> = ({ label, value, icon, color, bg }) => (
-  <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl transition-all">
-    <div className={`${bg} ${color} p-5 rounded-[1.5rem] transition-transform group-hover:scale-110`}>{icon}</div>
-    <div><p className="text-slate-400 text-[10px] font-black uppercase tracking-widest">{label}</p><h4 className="text-3xl font-black text-slate-900">{value}</h4></div>
+  <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center gap-6 group hover:shadow-xl transition-all duration-300">
+    <div className={`${bg} ${color} p-5 rounded-[1.5rem] transition-transform group-hover:scale-110 shadow-inner`}>{icon}</div>
+    <div><p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">{label}</p><h4 className="text-3xl font-black text-slate-900 tracking-tighter">{value}</h4></div>
   </div>
 );
 
 const StatusBadge: React.FC<{ status: StatusSurat }> = ({ status }) => {
-  const styles = { Selesai: 'bg-emerald-50 text-emerald-700', Penting: 'bg-rose-50 text-rose-700', Proses: 'bg-amber-50 text-amber-700' };
-  return <span className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase border ${styles[status]}`}>{status}</span>;
+  const styles = { 
+    Selesai: 'bg-emerald-50 text-emerald-700 border-emerald-100', 
+    Penting: 'bg-rose-50 text-rose-700 border-rose-100', 
+    Proses: 'bg-amber-50 text-amber-700 border-amber-100' 
+  };
+  return <span className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase border shadow-sm ${styles[status]}`}>{status}</span>;
 };
 
 const DetailItem: React.FC<{ label: string, value: string, isStatus?: boolean }> = ({ label, value, isStatus }) => (
   <div>
-    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">{label}</p>
-    {isStatus ? <StatusBadge status={value as StatusSurat}/> : <p className="font-black text-slate-900">{value || '-'}</p>}
+    <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1.5">{label}</p>
+    {isStatus ? <StatusBadge status={value as StatusSurat}/> : <p className="font-black text-slate-900 text-base">{value || '-'}</p>}
   </div>
 );
 
