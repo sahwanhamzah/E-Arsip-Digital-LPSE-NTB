@@ -252,41 +252,45 @@ const App: React.FC = () => {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6 relative bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center opacity-25 scale-105" style={{ backgroundImage: "url('https://storage.ntbprov.go.id/biropbj/media/kantor-gubernur-ntb.jpg')" }}></div>
-        <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[3rem] p-12 relative z-10 shadow-2xl border border-white/20">
-          <div className="text-center mb-10">
-            <div className="bg-yellow-500 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-yellow-500/20"><ShieldCheck className="text-slate-900" size={40} /></div>
-            <h1 className="text-3xl font-black text-slate-900">E-Arsip Digital</h1>
-            <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em] mt-2">LPSE PROV NTB</p>
+      <div className="min-h-screen flex items-center justify-center p-4 overflow-hidden relative bg-slate-900">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-105" style={{ backgroundImage: "url('https://storage.ntbprov.go.id/biropbj/media/kantor-gubernur-ntb.jpg')" }}>
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-blue-900/40 backdrop-blur-[2px]"></div>
+        </div>
+        <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.6)] overflow-hidden animate-in fade-in zoom-in duration-700 relative z-10">
+          <div className="p-12 bg-gradient-to-br from-white/5 to-transparent flex flex-col justify-between relative hidden lg:flex border-r border-white/5">
+             <div className="relative z-10">
+                <div className="bg-[#EAB308] w-14 h-14 rounded-2xl flex items-center justify-center mb-8 shadow-2xl shadow-yellow-500/30 ring-4 ring-yellow-500/20"><ShieldCheck className="w-8 h-8 text-[#0F172A]" /></div>
+                <h1 className="text-4xl font-extrabold text-white leading-tight drop-shadow-md">Sistem E-Arsip <br /><span className="text-blue-400">Digital LPSE NTB</span></h1>
+                <p className="mt-4 text-slate-300 text-lg font-medium">Manajemen arsip surat dinas yang modern, aman, dan efisien untuk integritas pengadaan.</p>
+             </div>
+             <div className="relative z-10 mt-12">
+                <div className="flex items-center gap-4 p-5 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
+                   <div className="bg-emerald-500/20 p-2.5 rounded-xl"><CheckCircle2 className="w-6 h-6 text-emerald-400" /></div>
+                   <div><p className="text-sm text-white font-bold">Terverifikasi Sistem</p><p className="text-xs text-slate-400 font-medium">Infrastruktur Digital Pemprov NTB</p></div>
+                </div>
+                <div className="mt-10 flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></div><p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Pemerintah Provinsi Nusa Tenggara Barat</p></div>
+             </div>
           </div>
-          <form onSubmit={handleLogin} className="space-y-6">
-            {loginError && <div className="p-4 bg-rose-50 text-rose-600 rounded-2xl text-[10px] font-black uppercase text-center border border-rose-100">{loginError}</div>}
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Username</label>
-              <div className="relative group">
-                <UserIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500" size={20} />
-                <input required type="text" className="w-full pl-14 pr-6 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Password</label>
-              <div className="relative group">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500" size={20} />
-                <input required type={showPassword ? 'text' : 'password'} className="w-full pl-14 pr-14 py-4 bg-slate-100/50 border-2 border-transparent focus:border-blue-500 rounded-[1.5rem] outline-none font-bold text-slate-700" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300">
-                  {showPassword ? <EyeOff size={20}/> : <Eye size={20}/>}
-                </button>
-              </div>
-            </div>
-            <button disabled={isLoginLoading} type="submit" className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black tracking-widest uppercase text-[10px] shadow-xl hover:bg-blue-900 transition-all flex items-center justify-center gap-3">
-              {isLoginLoading ? <Loader2 className="animate-spin" size={20}/> : 'Masuk Sistem'}
-            </button>
-          </form>
+          <div className="p-8 lg:p-16 flex flex-col justify-center bg-white">
+            <div className="mb-10 text-center lg:text-left"><h2 className="text-3xl font-black text-slate-900 tracking-tight">Selamat Datang</h2><p className="text-slate-500 mt-2 font-medium">Silakan akses kredensial Anda untuk melanjutkan</p></div>
+            <form onSubmit={handleLogin} className="space-y-6">
+               {loginError && <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2"><X size={18} />{loginError}</div>}
+               <div className="space-y-2">
+                  <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Username</label>
+                  <div className="relative group"><UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} /><input required type="text" placeholder="admin / staf" className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-semibold text-slate-800" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} /></div>
+               </div>
+               <div className="space-y-2">
+                  <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Password</label>
+                  <div className="relative group"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} /><input required type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-semibold text-slate-800" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}</button></div>
+               </div>
+               <button disabled={isLoginLoading} type="submit" className="w-full bg-[#0F172A] hover:bg-blue-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 flex items-center justify-center gap-3">{isLoginLoading ? <Loader2 size={20} className="animate-spin" /> : <>Akses Dasbor</>}</button>
+            </form>
+          </div>
         </div>
       </div>
     );
   }
+
 
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
