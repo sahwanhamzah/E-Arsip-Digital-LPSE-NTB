@@ -24,20 +24,10 @@ import {
   User as UserIcon,
   Lock,
   EyeOff,
-  QrCode,
-  Download,
-  Settings,
-  Database,
-  CloudDownload,
-  CloudUpload,
-  RefreshCw,
-  TrendingUp,
+  CheckCircle2,
   Activity,
-  ChevronLeft,
-  ChevronRight,
-  Filter,
-  ExternalLink,
-  Info
+  // Fix: Added missing Settings icon import from lucide-react
+  Settings
 } from 'lucide-react';
 import { Surat, KategoriSurat, StatusSurat, Stats, User } from './types.ts';
 import { summarizeDocument } from './services/geminiService.ts';
@@ -128,7 +118,6 @@ const App: React.FC = () => {
     });
   }, [suratList, activeTab, searchTerm]);
 
-  const totalPages = Math.ceil(filteredList.length / itemsPerPage) || 1;
   const paginatedList = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
     return filteredList.slice(start, start + itemsPerPage);
@@ -199,7 +188,6 @@ const App: React.FC = () => {
   };
 
   const handleOpenAdd = () => {
-    // Both Admin and Staff can add now
     const defaultKategori: KategoriSurat = activeTab === 'keluar' ? 'Keluar' : 'Masuk';
     setFormData({ 
       noSurat: '', kodeHal: '', perihal: '', pihak: '', 
@@ -212,7 +200,6 @@ const App: React.FC = () => {
   };
 
   const handleEdit = (item: Surat) => {
-    // Keep edit to Admin or we can allow Staff to edit as well
     setFormData(item);
     setSelectedSurat(item);
     setShowFormModal(true);
@@ -283,14 +270,13 @@ const App: React.FC = () => {
                   <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Password</label>
                   <div className="relative group"><Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} /><input required type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="w-full pl-12 pr-12 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-semibold text-slate-800" value={loginForm.password} onChange={(e) => setLoginForm({...loginForm, password: e.target.value})} /><button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}</button></div>
                </div>
-               <button disabled={isLoginLoading} type="submit" className="w-full bg-[#0F172A] hover:bg-blue-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 flex items-center justify-center gap-3">{isLoginLoading ? <Loader2 size={20} className="animate-spin" /> : <>Akses Dasbor</>}</button>
+               <button disabled={isLoginLoading} type="submit" className="w-full bg-[#0F172A] hover:bg-blue-900 text-white py-4 rounded-2xl font-bold shadow-xl shadow-slate-200 flex items-center justify-center gap-3 transition-all">{isLoginLoading ? <Loader2 size={20} className="animate-spin" /> : <>Akses Dasbor</>}</button>
             </form>
           </div>
         </div>
       </div>
     );
   }
-
 
   return (
     <div className="flex h-screen bg-[#F8FAFC]">
@@ -334,12 +320,10 @@ const App: React.FC = () => {
                 <button onClick={() => handleGenerateReport('Keluar')} className="w-full text-left px-6 py-4 text-sm font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-4">Surat Keluar</button>
               </div>
             )}
-            {/* Staff / User should also see this button for Masuk/Keluar tabs */}
-            {(currentUser.role === 'Administrator' || activeTab === 'masuk' || activeTab === 'keluar') && (
-              <button onClick={handleOpenAdd} className="bg-slate-900 text-white px-8 py-3.5 rounded-[1.25rem] flex items-center gap-3 font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-600 transition-all">
-                <Plus size={20} /><span>Arsip Baru</span>
-              </button>
-            )}
+            {/* Staff / User should also see this button */}
+            <button onClick={handleOpenAdd} className="bg-slate-900 text-white px-8 py-3.5 rounded-[1.25rem] flex items-center gap-3 font-black text-[10px] uppercase tracking-widest shadow-lg hover:bg-blue-600 transition-all">
+              <Plus size={20} /><span>Arsip Baru</span>
+            </button>
           </div>
         </header>
 
@@ -417,7 +401,6 @@ const App: React.FC = () => {
                         <td className="px-8 py-6 last:rounded-r-[2rem] border-y border-r border-transparent group-hover:border-slate-100 text-right">
                           <div className="flex justify-end gap-3 opacity-60 group-hover:opacity-100">
                             <button onClick={() => { setSelectedSurat(item); setShowDetailModal(true); }} className="p-3 text-slate-400 hover:text-blue-600 hover:bg-white rounded-2xl shadow-sm"><Eye size={20}/></button>
-                            {/* Both roles can edit entries, but delete is for Admin */}
                             <button onClick={() => handleEdit(item)} className="p-3 text-slate-400 hover:text-emerald-600 hover:bg-white rounded-2xl shadow-sm"><Edit3 size={20}/></button>
                             {currentUser.role === 'Administrator' && (
                               <button onClick={() => handleDelete(item.id)} className="p-3 text-slate-400 hover:text-rose-600 hover:bg-white rounded-2xl shadow-sm"><Trash2 size={20}/></button>
