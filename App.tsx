@@ -448,7 +448,8 @@ const App: React.FC = () => {
                 <div className="w-[350px] p-10 bg-white border-r border-slate-50 overflow-y-auto space-y-8">
                   <DetailItem label="Pihak/Instansi" value={selectedSurat.pihak}/>
                   <DetailItem label="Status" value={selectedSurat.status} isStatus/>
-                  <DetailItem label="Tanggal" value={selectedSurat.tanggalSurat}/>
+                  <DetailItem label="Tgl Surat" value={selectedSurat.tanggalSurat}/>
+                  <DetailItem label="Tgl Terima" value={selectedSurat.tanggalTerima}/>
                   <div className="p-6 bg-blue-50 rounded-[1.5rem]">
                     <p className="text-[10px] font-black uppercase text-blue-500 mb-2">Ringkasan AI</p>
                     <p className="text-sm font-bold text-blue-900 italic">"{selectedSurat.isiRingkas || 'Memproses...'}"</p>
@@ -475,26 +476,63 @@ const App: React.FC = () => {
                <h3 className="text-2xl font-black">{selectedSurat ? 'Edit Arsip' : 'Arsip Baru'}</h3>
                <form onSubmit={handleFormSubmit} className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400">Perihal</label>
-                    <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.perihal} onChange={e => setFormData({...formData, perihal: e.target.value})} />
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Perihal Dokumen</label>
+                    <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.perihal} onChange={e => setFormData({...formData, perihal: e.target.value})} placeholder="Contoh: Undangan Rapat..." />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-slate-400">No Surat</label>
-                      <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.noSurat} onChange={e => setFormData({...formData, noSurat: e.target.value})} />
+                      <label className="text-[10px] font-black uppercase text-slate-400 ml-2">No Surat</label>
+                      <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.noSurat} onChange={e => setFormData({...formData, noSurat: e.target.value})} placeholder="X/LPSE/2024" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase text-slate-400">Instansi</label>
-                      <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.pihak} onChange={e => setFormData({...formData, pihak: e.target.value})} />
+                      <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Instansi / Pihak</label>
+                      <input required className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.pihak} onChange={e => setFormData({...formData, pihak: e.target.value})} placeholder="Nama Instansi" />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-slate-400">File Dokumen</label>
-                    <input type="file" className="w-full" onChange={handleFileChange} />
+                  
+                  {/* NEW DATE FIELDS */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Tanggal Surat</label>
+                      <input required type="date" className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.tanggalSurat} onChange={e => setFormData({...formData, tanggalSurat: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Tanggal Terima</label>
+                      <input required type="date" className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.tanggalTerima} onChange={e => setFormData({...formData, tanggalTerima: e.target.value})} />
+                    </div>
                   </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Status Arsip</label>
+                    <select className="w-full px-6 py-4 bg-slate-100 rounded-[1.5rem] outline-none font-bold" value={formData.status} onChange={e => setFormData({...formData, status: e.target.value as StatusSurat})}>
+                      <option value="Proses">Dalam Proses</option>
+                      <option value="Selesai">Selesai / Diarsipkan</option>
+                      <option value="Penting">Penting / Segera</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 ml-2">Unggah Dokumen (PDF/Gambar)</label>
+                    {!formData.fileData ? (
+                       <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-200 rounded-[2rem] p-8 flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-all">
+                         <Upload className="text-blue-500 mb-2" size={32} />
+                         <p className="text-xs font-bold text-slate-400 text-center">Klik untuk memilih file digital (Maks 15MB)</p>
+                         <input type="file" ref={fileInputRef} className="hidden" accept=".pdf,.docx,.jpg,.jpeg,.png" onChange={handleFileChange} />
+                       </div>
+                    ) : (
+                       <div className="p-6 bg-blue-50 rounded-[1.5rem] flex items-center justify-between border-2 border-blue-100">
+                         <div className="flex items-center gap-4 truncate">
+                           <FileIcon size={24} className="text-blue-600 shrink-0" />
+                           <span className="text-sm font-black text-blue-900 truncate">{formData.fileName}</span>
+                         </div>
+                         <button type="button" onClick={() => setFormData({...formData, fileData: '', fileName: ''})} className="bg-white text-rose-500 p-3 rounded-2xl shadow-sm"><X size={20}/></button>
+                       </div>
+                    )}
+                  </div>
+
                   <div className="flex gap-4 pt-4">
-                    <button type="submit" className="flex-1 bg-slate-900 text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest">Simpan</button>
-                    <button type="button" onClick={() => setShowFormModal(false)} className="px-10 bg-slate-100 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest">Batal</button>
+                    <button type="submit" className="flex-1 bg-slate-900 text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-blue-600 transition-all">Simpan Arsip</button>
+                    <button type="button" onClick={() => setShowFormModal(false)} className="px-10 bg-slate-100 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest transition-all">Batal</button>
                   </div>
                </form>
             </div>
@@ -505,7 +543,7 @@ const App: React.FC = () => {
         {showPrintPreview && (
           <div className="fixed inset-0 z-[200] bg-white flex flex-col p-10 overflow-y-auto">
              <div className="flex justify-between items-center mb-10 no-print">
-                <button onClick={() => window.print()} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Cetak</button>
+                <button onClick={() => window.print()} className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold">Cetak Laporan</button>
                 <button onClick={() => setShowPrintPreview(false)} className="text-slate-400"><X size={24}/></button>
              </div>
              <div className="max-w-[800px] mx-auto w-full border-2 border-slate-100 p-10 bg-white">
@@ -519,6 +557,8 @@ const App: React.FC = () => {
                          <th className="border border-slate-300 p-2">No</th>
                          <th className="border border-slate-300 p-2">No Surat</th>
                          <th className="border border-slate-300 p-2 text-left">Perihal</th>
+                         <th className="border border-slate-300 p-2">Tgl Surat</th>
+                         <th className="border border-slate-300 p-2">Tgl Terima</th>
                       </tr>
                    </thead>
                    <tbody>
@@ -527,6 +567,8 @@ const App: React.FC = () => {
                             <td className="border border-slate-300 p-2 text-center">{i+1}</td>
                             <td className="border border-slate-300 p-2 text-center font-bold">{s.noSurat}</td>
                             <td className="border border-slate-300 p-2">{s.perihal}</td>
+                            <td className="border border-slate-300 p-2 text-center">{s.tanggalSurat}</td>
+                            <td className="border border-slate-300 p-2 text-center">{s.tanggalTerima}</td>
                          </tr>
                       ))}
                    </tbody>
