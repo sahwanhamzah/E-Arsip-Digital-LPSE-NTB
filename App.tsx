@@ -255,7 +255,7 @@ const App: React.FC = () => {
                    <div className="bg-emerald-500/20 p-2.5 rounded-xl"><CheckCircle2 className="w-6 h-6 text-emerald-400" /></div>
                    <div><p className="text-sm text-white font-bold">Terverifikasi Sistem</p><p className="text-xs text-slate-400 font-medium">Infrastruktur Digital Pemprov NTB</p></div>
                 </div>
-                <div className="mt-10 flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></div><p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Pemerintah Provinsi Nusa Tenggara Barat</p></div>
+                <div className="mt-10 flex items-center gap-3"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></div><p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.2em]">Biro Pengadaan Barang/Jasa Setda Provinsi NTB</p></div>
              </div>
           </div>
           <div className="p-8 lg:p-16 flex flex-col justify-center bg-white">
