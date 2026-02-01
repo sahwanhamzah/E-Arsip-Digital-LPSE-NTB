@@ -264,7 +264,7 @@ const App: React.FC = () => {
                {loginError && <div className="p-4 bg-red-50 border border-red-100 text-red-600 text-sm font-bold rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2"><X size={18} />{loginError}</div>}
                <div className="space-y-2">
                   <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Username</label>
-                  <div className="relative group"><UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} /><input required type="text" placeholder="admin / staf" className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-semibold text-slate-800" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} /></div>
+                  <div className="relative group"><UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} /><input required type="text" placeholder="username" className="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-transparent focus:border-blue-500 focus:bg-white rounded-2xl outline-none transition-all font-semibold text-slate-800" value={loginForm.username} onChange={(e) => setLoginForm({...loginForm, username: e.target.value})} /></div>
                </div>
                <div className="space-y-2">
                   <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Password</label>
